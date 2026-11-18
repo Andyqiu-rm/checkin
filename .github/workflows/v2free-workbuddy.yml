@@ -1,4 +1,4 @@
-name: V2Free+WorkBuddy签到
+名称：V2Free+WorkBuddy签到
 
 on:
   workflow_dispatch:
@@ -7,6 +7,9 @@ on:
         description: '强制发送邮件（测试用）'
         type: boolean
         default: false
+  schedule:
+    - cron: '0 0,14 * * *'   # UTC 00:00/14:00 = 北京 08:00/22:00
+
 #  schedule:
 #    - cron: '3 8,22 * * *'    # 北京时间 08:00 / 22:00
 #      timezone: Asia/Shanghai
@@ -24,16 +27,16 @@ jobs:
     timeout-minutes: 15
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+    - 名称：结账代码name: Checkout code
+      使用：actions/checkout@v4: actions/checkout@v4
 
-    - name: Setup Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: '3.11'
+    - 名称：设置 Pythonname: Setup Python
+      使用：actions/setup-python@v5: actions/setup-python@v5
+      使用：:
+        python-version: '3.11': '3.11'
 
-    - name: Install dependencies
-      run: |
+    - name: 安装依赖项name: Install dependencies
+      运行：|: |
         python -m pip install --upgrade pip
         pip install urllib3==1.26.20 requests==2.31.0 six
 
@@ -85,8 +88,8 @@ jobs:
         fi
 
     - name: Keepalive
-      if: always()
-      shell: bash
+      if在：always()
+    步骤：: bash
       run: |
         days=$(( ( $(date +%s) - $(git log -1 --format=%ct) ) / 86400 ))
         echo "距上次提交 $days 天"
