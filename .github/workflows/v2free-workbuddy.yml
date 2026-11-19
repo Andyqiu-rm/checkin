@@ -1,16 +1,15 @@
-名称：V2Free+WorkBuddy签到
+name: V2Free+WorkBuddy签到
 
 on:
   workflow_dispatch:
     inputs:
       force_email:
-        description: '强制发送邮件（测试用）'
+        description: '强制发送邮件'
+        required: false
         type: boolean
-        default: false
   schedule:
-  - cron: '50 0 * * *'   # UTC 00:50 = 北京 08:50
-  - cron: '0 14 * * *'   # UTC 14:00 = 北京 22:00
-
+    - cron: '50 0 * * *'   # UTC 00:50 = 北京 08:50
+    - cron: '0 14 * * *'   # UTC 14:00 = 北京 22:00
 
 #  schedule:
 #    - cron: '3 8,22 * * *'    # 北京时间 08:00 / 22:00
