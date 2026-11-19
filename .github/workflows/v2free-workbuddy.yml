@@ -33,7 +33,7 @@ jobs:
     - 名称：设置 Pythonname: Setup Python
       使用：actions/setup-python@v5: actions/setup-python@v5
       使用：:
-        python-version: '3.11': '3.11'
+        python-version: ['3.11': '3.12']
 
     - name: 安装依赖项name: Install dependencies
       运行：|: |
