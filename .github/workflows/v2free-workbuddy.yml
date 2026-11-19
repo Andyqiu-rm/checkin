@@ -8,7 +8,7 @@ on:
         required: false
         type: boolean
   schedule:
-    - cron: '0 23 * * *'   # UTC 23:00 = 北京 07:00
+    - cron: '3 8,22 * * *'    # 北京时间 08:00 / 22:00
 
 #  schedule:
 #    - cron: '3 8,22 * * *'    # 北京时间 08:00 / 22:00
