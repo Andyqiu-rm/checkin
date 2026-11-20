@@ -9,7 +9,7 @@ on:
         type: boolean
   schedule:
     # GitHub Actions 的 cron 使用 UTC；北京时间 = UTC+8
-    - cron: '3 0,14 * * *'    # UTC 00:03 / 14:03 = 北京 08:03 / 22:03
+    - cron: '46 8,10 * * *'    # UTC 08:43 / 14:03 = 北京 08:03 / 22:03
 
 permissions:
   contents: write
