@@ -1,4 +1,4 @@
-name: V2Free+WorkBuddy签到
+name: V2Free签到
 
 on:
   workflow_dispatch:
@@ -10,7 +10,7 @@ on:
   schedule:
     # GitHub cron 默认使用 UTC；北京时间 = UTC+8
     # 下面表示北京时间每天 08:03 和 22:03
-    - cron: '53 5,14 * * *'
+    - cron: '3 0,14 * * *'
 
 permissions:
   contents: write
@@ -66,13 +66,6 @@ jobs:
             python3 v2free/main.py --username="${user_list[$i]}" --password="${pwd_list[$i]}" >> result_v2free.txt || true
           done
           sed -E 's/[^ ]+ ([0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2})/*** \1/' result_v2free.txt
-
-      - name: Checkin WorkBuddy
-        env:
-          WORKBUDDY_ACCOUNTS: ${{ secrets.WORKBUDDY_ACCOUNTS }}
-        run: |
-          python3 workbuddy/checkin.py > result_workbuddy.txt || echo "WorkBuddy 签到执行异常，详见上方日志" >> result_workbuddy.txt
-          cat result_workbuddy.txt
 
       - name: Send mail
         if: ${{ always() }}
