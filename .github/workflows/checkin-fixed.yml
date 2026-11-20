@@ -10,7 +10,7 @@ on:
   schedule:
     # GitHub cron 默认使用 UTC；北京时间 = UTC+8
     # 下面表示北京时间每天 08:03 和 22:03
-    - cron: '3 0,14 * * *'
+    - cron: '53 5,14 * * *'
 
 permissions:
   contents: write
