@@ -9,10 +9,10 @@ on:
         type: boolean
   schedule:
     # GitHub cron 默认使用 UTC；北京时间 = UTC+8
-    # 下面表示北京时间每天 Beijing 07:00, 12:00, and 23:30
+    # 下面表示北京时间每天 Beijing 07:00, 16:00, and 22:00
     - cron: "0 23 * * *"
-    - cron: "0 4 * * *"
-    - cron: "30 15 * * *"
+    - cron: "40 7 * * *"
+    - cron: "0 12 * * *"
 
 permissions:
   contents: write
