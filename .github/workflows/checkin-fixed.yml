@@ -1,0 +1,99 @@
+name: V2Free+WorkBuddy签到
+
+on:
+  workflow_dispatch:
+    inputs:
+      force_email:
+        description: '强制发送邮件'
+        required: false
+        type: boolean
+  schedule:
+    # GitHub cron 默认使用 UTC；北京时间 = UTC+8
+    # 下面表示北京时间每天 08:03 和 22:03
+    - cron: '3 0,14 * * *'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: checkin
+  cancel-in-progress: false
+
+jobs:
+  check-in:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install urllib3==1.26.20 requests==2.31.0 six
+
+      - name: Checkin V2Free
+        run: |
+          user='${{ secrets.USER }}'
+          pwd='${{ secrets.PWD }}'
+          user_list=()
+          pwd_list=()
+          IFS=","
+          for u in ${user[*]}
+          do
+            user_list[${#user_list[*]}]=${u}
+          done
+          for p in ${pwd[*]}
+          do
+            pwd_list[${#pwd_list[*]}]=${p}
+          done
+          user_num=${#user_list[*]}
+          pwd_num=${#pwd_list[*]}
+          if [ $user_num != $pwd_num ]; then
+            echo "账号和密码个数不对应"
+            exit 1
+          else
+            echo "共有 $user_num 个账号，即将开始签到"
+          fi
+          > result_v2free.txt
+          for ((i=0;i<$user_num;i++))
+          do
+            python3 v2free/main.py --username="${user_list[$i]}" --password="${pwd_list[$i]}" >> result_v2free.txt || true
+          done
+          sed -E 's/[^ ]+ ([0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2})/*** \1/' result_v2free.txt
+
+      - name: Checkin WorkBuddy
+        env:
+          WORKBUDDY_ACCOUNTS: ${{ secrets.WORKBUDDY_ACCOUNTS }}
+        run: |
+          python3 workbuddy/checkin.py > result_workbuddy.txt || echo "WorkBuddy 签到执行异常，详见上方日志" >> result_workbuddy.txt
+          cat result_workbuddy.txt
+
+      - name: Send mail
+        if: ${{ always() }}
+        run: |
+          if [ "${{ inputs.force_email }}" = "true" ] || [ "$(TZ=Asia/Shanghai date +%H)" -lt 12 ]; then
+            python3 notify.py --remail '${{ secrets.remail }}' --semail '${{ secrets.semail }}' --secode '${{ secrets.secode }}'
+          else
+            echo "非早场，跳过邮件"
+          fi
+
+      - name: Keepalive
+        if: always()
+        shell: bash
+        run: |
+          days=$(( ( $(date +%s) - $(git log -1 --format=%ct) ) / 86400 ))
+          echo "距上次提交 $days 天"
+          if [ "$days" -ge 14 ]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            date -u '+%F %T UTC' > .keepalive
+            git add .keepalive
+            git commit -m "chore: keepalive [skip ci]"
+            git push || (git pull --rebase origin main && git push)
+          fi
